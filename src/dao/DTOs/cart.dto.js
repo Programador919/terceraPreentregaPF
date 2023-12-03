@@ -1,9 +1,17 @@
-class CartDTO {
+export default class CartDTO {
     constructor(cart) {
-        this.user = cart.user || null; // Puedes ajustar cómo manejas esto según tu lógica de negocio
-        this.products = cart.products || [];
-        this.total = cart.total || 0;
+        if(!cart) {
+            throw new Error("El objeto cart es requerido");
+        }
+        this.products = Array.isArray(cart.products) ? cart.products : [];
     }
 }
-  
-module.exports = CartDTO;
+
+
+
+
+// export default class CartDTO {
+//     constructor(cart) {
+//         this.products = cart.products
+//     }
+// }

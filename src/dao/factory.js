@@ -1,32 +1,31 @@
-const mongoose = require("mongoose");
-const config = require("../config/factory.config.js");
-const dotenv = require("dotenv");
-
-dotenv.config();
-let Users;
-let Carts;
-let Products;
-
+import mongoose from "mongoose";
+import config from '../config/config.js'
+export let CartsFactory
+export let Products
+export let Users
+export let Tickets
 switch (config.persistence) {
-  case "MONGO":
-    console.log("Using MongoDB");
-    mongoose.connect(process.env.MONGOURL)
-      .then(() => {
-        Users = require("./mongo/users.mongo.js");
-        Carts = require("./mongo/carts.mongo.js");
-        Products = require("./mongo/products.mongo.js");
-        console.log("Connected to MongoDB");
-      })
-      .catch(error => {
-        console.error("Error connecting to MongoDB:", error);
-      });
-    break;
-  case "MEMORY":
-    console.log("Using Memory");
-    Users = require("../dao/memory/user.memory.js");
-    Carts = require("../dao/memory/cart.memory.js");
-    Products = require("../dao/memory/product.memory.js");
-    break;
-}
+    case "MONGO":
+        const connection = mongoose.connect(config.mongo_url).then(()=>{console.log("connected db")})
+        const { default: CartsMongo } = await import('./mongo/carts.mongo.js')
+        const { default: ProductsMongo } = await import('./mongo/products.mongo.js')
+        const { default: UsersMongo } = await import('./mongo/users.mongo.js')
+        const { default: TicketsMongo } = await import('./mongo/tickets.mongo.js')
+        CartsFactory = CartsMongo
+        Products = ProductsMongo
+        Users = UsersMongo
+        Tickets = TicketsMongo
+        break;
+    case "MEMORY":
+        const { default: CartsMemory } = await import("./memory/carts.memory.js")
+        const { default: ProductsMemory } = await import("./memory/products.memory.js")
+        const { default: UsersMemory } = await import("./memory/users.memory.js")
+        const { default: TicketsMemory } = await import("./memory/tickets.memory.js")
+        CartsFactory = CartsMemory
+        Products = ProductsMemory
+        Users = UsersMemory
+        Tickets = TicketsMemory
+        break
+    default:
 
-module.exports = { Users, Carts, Products };
+}

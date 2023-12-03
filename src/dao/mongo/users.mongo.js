@@ -1,59 +1,50 @@
-const {userModel} = require("./models/users.model.js");
+import usersModel from './models/users.model.js'
 
-class UserDAO {
-  // Funciones DAO para el manejo de los usuarios en la base de datos
-    async getAllUsers() {
-        try {
-            const users = await userModel.find();
-            return { result: "success", payload: users };
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
-    }   
-    async createUser(userData) {
-        const { nombre, apellido, email, password } = userData;
-        if (!nombre || !apellido || !email || !password) {
-            return { status: "error", error: "Missing data" };
-        } 
-        try {
-            const usuario = await userModel.create({ nombre, apellido, email, password });
-            return { message: "User created", user: usuario };
-        } catch (error) {
-            console.error(error);
-            return { status: "error", error: "Error creating user" };
-        }
+export default class Users {
+    constructor() {
+
     }
 
-    async getUserById(userId) {
-        try {
-            const user = await userModel.findById(userId);
-            return user;
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
+    get = async () => {
+        try
+        {
+            let users = await usersModel.find()
+            return users
+        }catch (error) {
+            console.error('Error al obtener usuarios:', error);
+            return 'Error obtener usuarios';
+        }       
     }
-
-    async updateUserById(userId, updateFields) {
-        try {
-            const updatedUser = await userModel.findByIdAndUpdate(userId, updateFields, { new: true });
-            return updatedUser;
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
+    findEmail = async (param) => {
+        try
+        {
+            const user = await usersModel.findOne(param)  
+            return user
+        }catch (error) {
+            console.error('Error al buscar email:', error);
+            return 'Error al buscar email de usuario';
+        }   
+        
     }
-
-    async deleteUserById(userId) {
-        try {
-            await userModel.findByIdAndDelete(userId);
-            return { message: "User deleted" };
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
+    addUser = async (userData) => {
+        try
+        {
+            let userCreate = await usersModel.create(userData);
+            return userCreate
+            console.log("Usuario creado correctamente")
+        }catch(error){
+            console.error('Error al crear usuario:', error);
+            return 'Error al crear usuario';
+        }      
+    }
+    findJWT = async (filterFunction) => {
+        try
+        {
+            const user = await usersModel.find(filterFunction)
+            return user
+        }catch(error){
+            console.error('Error al obtener filtro JWT:', error);
+            return 'Error al obtener filtro JWT';
+        }      
     }
 }
-
-module.exports = UserDAO;

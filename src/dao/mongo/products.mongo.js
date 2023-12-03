@@ -1,60 +1,57 @@
-const {productModel} = require("./models/products.model.js");
+import productsModel from './models/products.model.js'
+import mongoose from 'mongoose'
 
-class ProductDao {
-    async getProducts() {
-        try {
-            // Lógica para obtener todos los productos
-            const products = await productModel.find();
-            return products;
-        } catch (error) {
-            console.log(error);
-            return null;
-        }
+export default class Products {
+    constructor() {
+
     }
 
-    async getProductById(id) {
-        try {
-            // Lógica para obtener un producto por ID
-            const product = await productModel.findOne({ _id: id });
-            return product;
-        } catch (error) {
-            console.log(error);
-            return null;
-        }
+    get = async () => {
+        let products = await productsModel.find().lean()
+        return products
     }
+    addProduct = async (prodData) => {
+        try
+        {
+            let prodCreate = await productsModel.create(prodData);
+            return prodCreate
+            console.log("Producto creado correctamente")
+        }catch(error){
+            console.error('Error al crear producto:', error);
+            return 'Error al crear producto';
+        }      
+    }
+    updateProduct = async (prodId, prodData) => {
+        try {
+            if (!mongoose.Types.ObjectId.isValid(prodId)) {
+                return 'ID de producto no válido';
+            }
+            let updatedProduct = await productsModel.updateOne({ _id: new mongoose.Types.ObjectId(prodId) }, { $set: prodData });
 
-    async saveProduct(product) {
-        try {
-            // Lógica para guardar un producto
-            const result = await productModel.create(product);
-            return result;
         } catch (error) {
-            console.log(error);
-            return null;
+            console.error('Error al actualizar producto:', error);
+            return 'Error al actualizar producto';
         }
     }
-
-    async updateProduct(id, product) {
+    deleteProduct = async (productId) => {
         try {
-            // Lógica para actualizar un producto por ID
-            const result = await productModel.updateOne({ _id: id }, { $set: product });
-            return result;
+            // Verificar si el ID es válido
+            if (!mongoose.Types.ObjectId.isValid(productId)) {
+                return 'ID de producto no válido';
+            }
+    
+            // Eliminar el producto utilizando el ID
+            let deletedProduct = await productsModel.deleteOne({ _id: new mongoose.Types.ObjectId(productId) });
+    
+            if (deletedProduct.deletedCount > 0) {
+                // Si se eliminó al menos un producto, se considera exitoso
+                return 'Producto eliminado exitosamente';
+            } else {
+                return 'No se encontró un producto con el ID proporcionado';
+            }
         } catch (error) {
-            console.log(error);
-            return null;
+            console.error('Error al eliminar producto:', error);
+            return 'Error al eliminar producto';
         }
-    }
-
-    async deleteProduct(id) {
-        try {
-            // Lógica para eliminar un producto por ID
-            const result = await productModel.deleteOne({ _id: id });
-            return result;
-        } catch (error) {
-            console.log(error);
-            return null;
-        }
-    }
+    };
 }
-
-module.exports = ProductDao;

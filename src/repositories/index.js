@@ -1,18 +1,11 @@
-const { Contacts, Products, Carts, Users } = require("../dao/factory.js");
+import { CartsFactory, Products, Tickets, Users } from "../dao/factory.js";
 
-const ContactRepository = require("./contacts.repository.js");
-const ProductRepository = require("./products.repository.js");
-const CartRepository = require("./carts.repository.js");
-const UserRepository = require("./users.repository.js");
+import CartRepository from "./Carts.repository.js";
+import ProductRepository from "./Products.repository.js";
+import UserRepository from "./Users.repository.js";
+import TicketRepository from "./Tickets.repository.js";
 
-const contactService = new ContactRepository(new Contacts());
-const productService = new ProductRepository(new Products());
-const cartService = new CartRepository(new Carts());
-const userService = new UserRepository(new Users());
-
-module.exports = {
-  contactService,
-  productService,
-  cartService,
-  userService,
-};
+export const cartService = new CartRepository(new CartsFactory())
+export const productService = new ProductRepository(new Products())
+export const userService = new UserRepository(new Users())
+export const ticketService = new TicketRepository(new Tickets())
